@@ -114,3 +114,38 @@ extension Networking {
     }
     
 }
+
+@available(iOS 15.0, macOS 12.0, watchOS 8.0, *)
+extension Networking {
+    
+    /// Request function is used to perform service request.
+    ///
+    /// - Parameter service: Service object that conforms to `NetworkingService` protocol. Has every information that client needs to perform a service call.
+    /// - Returns: Given services output type
+    public func throwingRequest<Service: NetworkingService>(service: Service) async throws -> Service.Output {
+        try await withCheckedThrowingContinuation { continuation in
+            request(service: service) { result in
+                switch result {
+                case .success(let output):
+                    continuation.resume(returning: output)
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
+            }
+            
+        }
+    }
+    
+    /// Request function is used to perform service request.
+    ///
+    /// - Parameter service: Service object that conforms to `NetworkingService` protocol. Has every information that client needs to perform a service call.
+    /// - Returns: `Result` with either given services output type or an error. In case of Networking error it will be of type `NetworkingError`.
+    public func request<Service: NetworkingService>(service: Service) async -> Result<Service.Output, Error> {
+        await withUnsafeContinuation { continuation in
+            request(service: service) { result in
+                continuation.resume(returning: result)
+            }
+        }
+    }
+    
+}

@@ -21,6 +21,12 @@ struct ContentView: View {
         Button("Fetch todos") {
             viewModel.fetch()
         }.padding()
+        
+        if #available(iOS 15.0, *) {
+            Button("Async Fetch", role: nil) {
+                await viewModel.asyncFetch()
+            }.padding()
+        }
     }
 }
 

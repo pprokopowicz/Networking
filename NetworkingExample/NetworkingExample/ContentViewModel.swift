@@ -24,4 +24,16 @@ final class ContentViewModel: ObservableObject {
             }).store(in: &cancellables)
     }
     
+    @available(iOS 15.0, *)
+    func asyncFetch() async {
+        let result = await Networking.shared.request(service: TodoService())
+        
+        switch result {
+        case .success(let todos):
+            self.todos = todos
+        case .failure:
+            break
+        }
+    }
+    
 }

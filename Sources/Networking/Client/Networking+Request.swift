@@ -132,7 +132,6 @@ extension Networking {
                     continuation.resume(throwing: error)
                 }
             }
-            
         }
     }
     
